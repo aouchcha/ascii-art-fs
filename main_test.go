@@ -11,7 +11,6 @@ import (
 const InputFile string = "thinkertoy.txt"
 
 // const InputFile string = "standard.txt"
-
 // const InputFile string = "shadow.txt"
 func Test_main(t *testing.T) {
 	var want string
@@ -37,6 +36,9 @@ func Test_main(t *testing.T) {
 
 func FS(text string) string {
 	slice := TamplateFormat(InputFile)
+	if len(slice) != 760 {
+		log.Fatalln("You have changed the Input file !!!!")
+	}
 	want := DrawFS(slice, text)
 	return want
 }
@@ -47,34 +49,22 @@ func LoadTests() []string {
 		log.Fatalln("Error :", err)
 	}
 	text := strings.Split(string(data), "\n")
-
 	return text
 }
 
-func TamplateFormat(InpitFile string) []string {
-	var sep string
-	if InputFile == "standard.txt" || InputFile == "shadow.txt" {
-		sep = "\n"
-	} else {
-		sep = "\r\n"
-	}
-
+func TamplateFormat(InputFile string) []string {
 	data, err := os.ReadFile(InputFile)
 	if err != nil {
 		log.Fatalln("Error :", err)
 	}
-	slice := DeletEmptySlices(strings.Split(string(data), sep))
-
+	slice := DeleteEmptySlices(strings.Split(strings.ReplaceAll(string(data), "\r", ""), "\n"))
 	return slice
 }
 
 func DrawFS(slice []string, text string) string {
 	var result string
-
 	if text != "" {
-
 		slicedArg := strings.Split(text, "\\n")
-
 		for _, word := range slicedArg {
 			if word != "" {
 				for j := 0; j < 8; j++ {
@@ -85,6 +75,7 @@ func DrawFS(slice []string, text string) string {
 							start := int(char-32)*8 + j
 
 							result += slice[start]
+
 						}
 					}
 					result += "\n"
@@ -96,12 +87,11 @@ func DrawFS(slice []string, text string) string {
 	} else {
 		result += "\n"
 	}
-
 	result = IsItNewLine(result)
 	return result
 }
 
-func DeletEmptySlices(slice []string) []string {
+func DeleteEmptySlices(slice []string) []string {
 	var temp []string
 	for i := range slice {
 		if slice[i] != "" {
